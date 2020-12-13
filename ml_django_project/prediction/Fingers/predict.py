@@ -11,6 +11,8 @@ from tensorflow import keras
     
 def predict(image_path):
     
+    image_path = 'staticfiles/' + image_path
+
     img_height = 128
     img_width = 128
     

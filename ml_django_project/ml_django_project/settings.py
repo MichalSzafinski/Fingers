@@ -125,13 +125,13 @@ STATICFILES_DIRS = [
 ]
 
 # AWS S3 + Cloudfront, Google Cloud Storage, django-storages
-STATIC_ROOT = BASE_DIR / "cdn_test" / "static"
+STATIC_ROOT = BASE_DIR / "staticfiles" / "static"
 
 MEDIA_URL = "/media/"
 # any file field upload by default
-MEDIA_ROOT = BASE_DIR / "cdn_test" / "media"
+MEDIA_ROOT = BASE_DIR / "staticfiles" / "media"
 
-PROTECTED_MEDIA = BASE_DIR / "cdn_test" / "protected"
+PROTECTED_MEDIA = BASE_DIR / "staticfiles" / "protected"
 
 if DEBUG:
     STATIC_ROOT.mkdir(parents=True, exist_ok=True)

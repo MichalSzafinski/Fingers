@@ -1,9 +1,112 @@
 {% extends 'base.html' %}
 {% block content %}
 
-        JOLO
-        jak chcesz to wyloguj sie
-        <a href="{% url 'logout' %}">Wyloguj</a>
+<script>
+        $(document).ready(function () {
+                $(document).on('change', '.btn-file :file', function () {
+                        var input = $(this),
+                                label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+                        input.trigger('fileselect', [label]);
+                });
 
-        
+                $('.btn-file :file').on('fileselect', function (event, label) {
+
+                        var input = $(this).parents('.input-group').find(':text'),
+                                log = label;
+
+                        if (input.length) {
+                                input.val(log);
+                        } else {
+                                if (log) alert(log);
+                        }
+
+                });
+                function readURL(input) {
+                        if (input.files && input.files[0]) {
+                                var reader = new FileReader();
+
+                                reader.onload = function (e) {
+                                        $('#img-upload').attr('src', e.target.result);
+                                }
+
+                                reader.readAsDataURL(input.files[0]);
+                        }
+                }
+
+                $("#imgInp").change(function () {
+                        readURL(this);
+                });
+
+                $("#button-predict").click(function () {
+                        // disable button
+                        $(this).prop("disabled", true);
+                        // add spinner to button
+                        $(this).html(
+                                `Loading...`
+                        );
+                        var formdata = new FormData();
+                        var a = $("#imgInp");
+                        formdata.append("image", a[0].files[0]);
+                        $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: "send/",
+                                data: formdata,
+                                processData: false,
+                                contentType: false,
+                                complete: function (data) {
+                                        $("#button-predict").prop("disabled", false);
+                                        // add spinner to button
+                                        $("#button-predict").html(
+                                                `Predict`
+                                        );
+                                },
+                                success: function (data) {
+                                        console.log("success");
+                                        console.log(data);
+                                        var a = data.prediction;
+                                        console.log(data.prediction)
+                                        console.log(data["prediction"])
+                                        $("#label-result").empty();
+                                        $("#label-result").append("Prediction result: " + data.prediction);
+                                        $("#label-accuracy").empty();
+                                        $("#label-accuracy").append("with accuracy: " + data.chance + "%");
+                                },
+                                error: function (data) {
+                                        console.log("error");
+                                        console.log(data);
+                                }
+                        });
+
+                });
+        });
+</script>
+
+
+
+
+<div class="container">
+        <div class="col-sm-7">
+                <div class="form-group">
+                        <label>Upload Image</label>
+                        <div class="input-group">
+                                <span class="input-group-btn">
+                                        <span class="btn btn-default btn-file">
+                                                Browse… <input type="file" id="imgInp">
+                                        </span>
+                                </span>
+                                <input type="text" class="form-control" readonly>
+                        </div>
+                        <img id='img-upload' />
+                </div>
+        </div>
+        <div class="col-sm-2" style="margin-top: 24px;">
+                <button id="button-predict" type="button" class="btn btn-primary">Predict</button>
+        </div>
+        <div class="col-sm-3" style="margin-top: 16px;">
+                <label id="label-result">Prediction result: -</label>
+                <label id="label-accuracy">with accuracy: -</label>
+        </div>
+</div>
+<input type="hidden" id="userId" value={{author_id}}>
 {% endblock content %}

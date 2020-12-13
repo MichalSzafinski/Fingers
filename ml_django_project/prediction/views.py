@@ -21,21 +21,21 @@ def home_view(request):
     print(request.user)
     if not request.user.is_authenticated:
         return redirect('/login_error/')
-    return render(request, "index.html")
+    return render(request, "index.html", {"author_id" : request.user})
 
 
 @csrf_exempt
 def upload_photo_view(request):
     if request.method == 'POST':
         upload = Upload.objects.create(
-            user='',
-            image='',
+            image=request.FILES.get('image'),
         )
+        upload.save()
         output = predict(upload.get_path())
         upload.prediction = str(output[0])
         upload.chance = str(output[1])
         upload.save()
-    return JsonResponse({'prediciton': upload.prediction, 'szanse': upload.chance})
+    return JsonResponse({'prediction': upload.prediction, 'chance': upload.chance[0:5]})
 
 
 class UploadView(viewsets.ModelViewSet):

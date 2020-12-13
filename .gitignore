@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+
+ml_django_project/cdn_test/*
+ml_django_project/staticfiles/*
+
+
